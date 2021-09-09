@@ -105,12 +105,8 @@ def drawActiveBlock():
 		yVal += 1
 		for x in y:
 			xVal += 1
-			print(y)
-			print(x)
 			if x == 1:
 				sense.set_pixel(xVal+activeBlock_x,yVal+activeBlock_y,(255,255,255))
 		
-sense.clear()
-generateBlock()
-drawActiveBlock()
+
 
