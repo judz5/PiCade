@@ -79,12 +79,19 @@ blockData = [square, lBlock, iBlock, zBlock]
 
 ####
 
+field =[[0,0,0,0,0,0,0,0],
+		[0,0,0,0,0,0,0,0],
+		[0,0,0,0,0,0,0,0],
+		[0,0,0,0,0,0,0,0],
+		[0,0,0,0,0,0,0,0],
+		[0,0,0,0,0,0,0,0],
+		[0,0,0,0,0,0,0,0],
+		[0,0,0,0,0,0,0,0]]
+
 activeBlock_x = None
 activeBlock_y = None
 activeBlock = None
 activeBlock_dir = None
-
-
 
 def generateBlock():
 	global activeBlock_x, activeBlock_y, activeBlock, activeBlock_dir
@@ -107,6 +114,16 @@ def drawActiveBlock():
 			xVal += 1
 			if x == 1:
 				sense.set_pixel(xVal+activeBlock_x,yVal+activeBlock_y,(255,255,255))
-		
+				addPixel(xVal+activeBlock_x,yVal+activeBlock_y)	
 
+def addPixel(x,y):
+	field[y][x] = 1
 
+def drawField():
+	for y in range(0,8):
+		for x in range(0,8):
+			sense.set_pixel(x,y,(255,255,255))
+
+generateBlock()
+drawActiveBlock()
+print(field)
