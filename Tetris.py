@@ -114,7 +114,6 @@ def drawActiveBlock():
 			xVal += 1
 			if x == 1:
 				sense.set_pixel(xVal+activeBlock_x,yVal+activeBlock_y,(255,255,255))
-				addPixel(xVal+activeBlock_x,yVal+activeBlock_y)	
 
 def addPixel(x,y):
 	field[y][x] = 1
@@ -125,5 +124,45 @@ def drawField():
 			sense.set_pixel(x,y,(255,255,255))
 
 generateBlock()
-drawActiveBlock()
-print(field)
+
+while True:
+	
+	time.sleep(1)
+	
+	events = sense.stick.get_events()
+	if events:
+		for e in events:
+			if e.direction == "right":
+				activeBlock_x += 1
+				
+			if e.direction == "left":
+				activeBlock_x -= 1
+		
+	activeBlock_y += 1
+	
+	sense.clear()
+	drawActiveBlock()
+	
+			
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
