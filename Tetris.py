@@ -8,7 +8,7 @@ sense.clear()
 MATRIX_MAX = 7
 MATRIX_MIN = 0
 
-gameSpeed = 0.5
+gameSpeed = 1.0
 timeCounter = 0.0
 lft = 0.0
 interval = gameSpeed
@@ -98,7 +98,7 @@ def generateBlock():
 	activeBlock = hold[activeBlock_dir]
 
 def drawActiveBlock():
-	yVal = 0
+	yVal = -1
 	xVal = 0
 	for y in activeBlock:
 		xVal = 0
@@ -115,7 +115,7 @@ def drawField():
 	for y in range(0,8):
 		for x in range(0,8):
 			if field[y][x] == 1:
-				sense.set_pixel(x,y,(255,255,0))
+				sense.set_pixel(x,y,(255,0,0))
 
 generateBlock()
 
