@@ -81,32 +81,40 @@ field =[[0,0,0,0,0,0,0,0],
 		[0,0,0,0,0,0,0,0],
 		[0,0,0,0,0,0,0,0]]
 
-activeBlock_x = None
-activeBlock_y = None
-activeBlock = None
-activeBlock_dir = None
+activeBlock_x = 2
+activeBlock_y = -1
+activeBlock = 2
+activeBlock_dir = 1
 
 def generateBlock():
 	global activeBlock_x, activeBlock_y, activeBlock, activeBlock_dir
 	temp = None
 	activeBlock_x = 2
 	activeBlock_y = -1
-	temp = randint(0,3)
+	activeBlock = randint(0,3)
 	activeBlock_dir = randint(0,3)
-	hold = None
-	hold = blockData[temp]
-	activeBlock = hold[activeBlock_dir]
+
 
 def drawActiveBlock():
 	yVal = -1
 	xVal = 0
-	for y in activeBlock:
-		xVal = 0
-		yVal += 1
-		for x in y:
+	
+	if len(blockData[activeBlock][activeBlock_dir]) == 1:
+		for x in blockData[activeBlock][activeBlock_dir]:
 			xVal += 1
-			if x == 1:
-				sense.set_pixel(xVal+activeBlock_x,yVal+activeBlock_y,(255,255,255))	
+			sense.set_pixel(xVal + activeBlock_x, activeBlock_y,(255,255,255))
+	else:
+		for y in blockData[activeBlock][activeBlock_dir]:
+			xVal = 0
+			yVal += 1
+			if y:
+					for x in y:
+						xVal += 1
+						if x == 1:
+							sense.set_pixel(xVal+activeBlock_x,yVal+activeBlock_y,(255,255,255))	
+			else:
+				sense.set_pixel(activeBlock_x,yVal+activeBlock_y,(255,255,255))
+
 
 def addPixel(x,y):
 	field[y][x] = 1
@@ -116,8 +124,15 @@ def drawField():
 		for x in range(0,8):
 			if field[y][x] == 1:
 				sense.set_pixel(x,y,(255,0,0))
+				
+def checkCollision(x,y):
+	print("testing")
+	
+def rotateBlock():
+	activeBlock_dir += 1
 
-generateBlock()
+#generateBlock()
+print(blockData[activeBlock][activeBlock_dir])
 
 while True:
 	
@@ -132,7 +147,7 @@ while True:
 			if e.direction == "right" and activeBlock_x>0: # add check coll
 				activeBlock_x += 1
 				
-			if e.direction == "left"and activeBlock_x<7: # Add check Coll
+			if e.direction == "left" and activeBlock_x<7: # Add check Coll
 				activeBlock_x -= 1
 			
 	if timeCounter > interval:
