@@ -72,19 +72,21 @@ blockData = [square, lBlock, iBlock, zBlock]
 
 ####
 
-field =[[0,0,0,0,0,0,0,0],
-		[0,0,0,0,0,0,0,0],
-		[0,0,0,0,0,0,0,0],
-		[0,0,0,0,0,0,0,0],
-		[0,0,0,0,0,0,0,0],
-		[0,0,0,0,0,0,0,0],
-		[0,0,0,0,0,0,0,0],
-		[0,0,0,0,0,0,0,0]]
+field =[[1,1,1,1,1,1,1,1,1,1],
+		[1,0,0,0,0,0,0,0,0,1],
+		[1,0,0,0,0,0,0,0,0,1],
+		[1,0,0,0,0,0,0,0,0,1],
+		[1,0,0,0,0,0,0,0,0,1],
+		[1,0,0,0,0,0,0,0,0,1],
+		[1,0,0,0,0,0,0,0,0,1],
+		[1,0,0,0,0,0,0,0,0,1],
+		[1,0,0,0,0,0,0,0,0,1],
+		[1,1,1,1,1,1,1,1,1,1]]
 
 activeBlock_x = 2
 activeBlock_y = -1
-activeBlock = 2
-activeBlock_dir = 1
+activeBlock = None
+activeBlock_dir = None
 
 def generateBlock():
 	global activeBlock_x, activeBlock_y, activeBlock, activeBlock_dir
@@ -98,12 +100,12 @@ def generateBlock():
 def drawActiveBlock():
 	yVal = -1
 	xVal = 0
-	
-	if len(blockData[activeBlock][activeBlock_dir]) == 1:
+	if not isinstance(blockData[activeBlock][activeBlock_dir][0], list):
+		print("herererer")
 		for x in blockData[activeBlock][activeBlock_dir]:
 			xVal += 1
 			sense.set_pixel(xVal + activeBlock_x, activeBlock_y,(255,255,255))
-	else:
+	else: 
 		for y in blockData[activeBlock][activeBlock_dir]:
 			xVal = 0
 			yVal += 1
@@ -120,19 +122,35 @@ def addPixel(x,y):
 	field[y][x] = 1
 
 def drawField():
-	for y in range(0,8):
-		for x in range(0,8):
+	for y in range(1,8):
+		for x in range(1,8):
 			if field[y][x] == 1:
 				sense.set_pixel(x,y,(255,0,0))
 				
-def checkCollision(x,y):
-	print("testing")
+def checkCollision(dx,dy):
+	k = 3
+	for i in range(activeBlock_x -1, activeBlock_x + 2):
+		m = 1
+		for j in range(activeBlock_y - 1, activeBlock_y + 2):
+			if(blockData[activeBlock][activeBlock_dir] & 1 << ((k*3) - m)):
+				if(field[i+dx][j+dy] != 0):
+					return True
+				m = m + 1
+			k = k - 1
+		return False
 	
 def rotateBlock():
-	activeBlock_dir += 1
+	global activeBlock_dir
+	print(activeBlock_dir)
+	if activeBlock_dir < 3:
+		activeBlock_dir += 1
+	elif activeBlock_dir >= 3:
+		activeBlock == 0
 
-#generateBlock()
+
+generateBlock()
 print(blockData[activeBlock][activeBlock_dir])
+print(activeBlock_dir)
 
 while True:
 	
@@ -144,11 +162,16 @@ while True:
 	events = sense.stick.get_events()
 	if events:
 		for e in events:
-			if e.direction == "right" and activeBlock_x>0: # add check coll
-				activeBlock_x += 1
+			if e.direction == "right" and e.action == "pressed": # add check coll
+				if not checkCollision(activeBlock_x+len(blockData[activeBlock][activeBlock_dir])):
+					activeBlock_x += 1
 				
-			if e.direction == "left" and activeBlock_x<7: # Add check Coll
-				activeBlock_x -= 1
+			if e.direction == "left" and e.action == "pressed": # Add check Coll
+				if not checkCollision(activeBlock_x-1, activeBlock_y):
+					activeBlock_x -= 1
+				
+			if e.direction == "up" and e.action == "pressed":
+				rotateBlock()
 			
 	if timeCounter > interval:
 		timeCounter = 0
