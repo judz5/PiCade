@@ -41,14 +41,16 @@ lBlock = {
 }
 
 iBlock = {
-    0: [[1],
-		[1],
-		[1]],
-	1: [1,1,1],
-	2: [[1],
-		[1],
-		[1]],
-	3: [1,1,1],
+    0: [[1,0],
+		[1,0],
+		[1,0]],
+	1: [[0,0,0],
+		[1,1,1]],
+	2: [[0,1],
+		[0,1],
+		[0,1]],
+	3: [[0,0,0],
+		[1,1,1]],
 
     
 }
@@ -80,11 +82,11 @@ field =[[1,1,1,1,1,1,1,1,1,1],
 		[1,0,0,0,0,0,0,0,0,1],
 		[1,0,0,0,0,0,0,0,0,1],
 		[1,0,0,0,0,0,0,0,0,1],
-		[1,0,0,0,0,0,0,0,0,1],
+		[1,0,0,0,1,1,1,0,0,1],
 		[1,1,1,1,1,1,1,1,1,1]]
 
-activeBlock_x = 2
-activeBlock_y = -1
+activeBlock_x = None
+activeBlock_y = None
 activeBlock = None
 activeBlock_dir = None
 
@@ -100,44 +102,31 @@ def generateBlock():
 def drawActiveBlock():
 	yVal = -1
 	xVal = 0
-	if not isinstance(blockData[activeBlock][activeBlock_dir][0], list):
-		print("herererer")
-		for x in blockData[activeBlock][activeBlock_dir]:
+	for y in blockData[activeBlock][activeBlock_dir]:
+		xVal = 0
+		yVal += 1
+		for x in y:
 			xVal += 1
-			sense.set_pixel(xVal + activeBlock_x, activeBlock_y,(255,255,255))
-	else: 
-		for y in blockData[activeBlock][activeBlock_dir]:
-			xVal = 0
-			yVal += 1
-			if y:
-					for x in y:
-						xVal += 1
-						if x == 1:
-							sense.set_pixel(xVal+activeBlock_x,yVal+activeBlock_y,(255,255,255))	
-			else:
-				sense.set_pixel(activeBlock_x,yVal+activeBlock_y,(255,255,255))
-
+			if x != 0:
+				sense.set_pixel(xVal + activeBlock_x, yVal + activeBlock_y,(255,255,255))
 
 def addPixel(x,y):
 	field[y][x] = 1
 
 def drawField():
-	for y in range(1,8):
-		for x in range(1,8):
-			if field[y][x] == 1:
-				sense.set_pixel(x,y,(255,0,0))
+	for y in range(1,9):
+		for x in range(1,9):
+			if field[y][x] != 0:
+				sense.set_pixel(x-1,y-1,(255,0,0))
 				
 def checkCollision(dx,dy):
-	k = 3
-	for i in range(activeBlock_x -1, activeBlock_x + 2):
-		m = 1
-		for j in range(activeBlock_y - 1, activeBlock_y + 2):
-			if(blockData[activeBlock][activeBlock_dir] & 1 << ((k*3) - m)):
-				if(field[i+dx][j+dy] != 0):
-					return True
-				m = m + 1
-			k = k - 1
-		return False
+	for y in range(dy, len(blockData[activeBlock][activeBlock_dir])):
+		for x in range(dx, len(blockData[activeBlock][activeBlock_dir][0])):
+			if field[y][x] != 0:
+				print "boomshakalaka"
+				return False
+	
+	return True
 	
 def rotateBlock():
 	global activeBlock_dir
@@ -175,7 +164,7 @@ while True:
 			
 	if timeCounter > interval:
 		timeCounter = 0
-		if not gameOver:
+		if not checkCollision(activeBlock_x+1,activeBlock_y+1):
 			activeBlock_y += 1
 		
 		sense.clear()
