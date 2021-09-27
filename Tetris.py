@@ -44,13 +44,13 @@ iBlock = {
     0: [[1,0],
 		[1,0],
 		[1,0]],
-	1: [[1,1,1],
-		[0,0,0]],
+	1: [[0,0,0],
+		[1,1,1]],
 	2: [[0,1],
 		[0,1],
 		[0,1]],
-	3: [[1,1,1],
-		[0,0,0]],
+	3: [[0,0,0],
+		[1,1,1]],
 
     
 }
@@ -79,9 +79,9 @@ field =[[0,0,0,0,0,0,0,0],
 		[0,0,0,0,0,0,0,0],
 		[0,0,0,0,0,0,0,0],
 		[0,0,0,0,0,0,0,0],
-		[0,0,0,0,0,0,0,0],
-		[0,0,0,0,0,0,0,0],
-		[0,0,0,0,0,0,0,0]]
+		[0,0,0,0,0,1,0,0],
+		[0,0,0,0,0,1,0,0],
+		[0,0,0,0,0,1,0,0]]
 
 
 activeBlock_x = None
@@ -91,6 +91,7 @@ activeBlock_dir = None
 
 def generateBlock():
 	global activeBlock_x, activeBlock_y, activeBlock, activeBlock_dir
+	print "GENERATIN' BLOCK"
 	temp = None
 	activeBlock_x = 2
 	activeBlock_y = -1
@@ -99,14 +100,19 @@ def generateBlock():
 
 
 def drawActiveBlock():
+	print "DRAWIN' BLOCK"
 	yVal = -1
 	xVal = 0
 	for y in blockData[activeBlock][activeBlock_dir]:
 		xVal = 0
 		yVal += 1
+		print "In the yyyyyy fooooor loooooopppp!"
 		for x in y:
 			xVal += 1
 			if x != 0:
+				if yVal == 0 and activeBlock_y == -1:
+					yVal += 1
+					print yVal, activeBlock_y
 				sense.set_pixel(xVal + activeBlock_x, yVal + activeBlock_y,(255,255,255))
 
 
@@ -120,11 +126,28 @@ def checkCollision(dx,dy):
 	print "new" , dy, dx
 	for y in range(0, len(blockData[activeBlock][activeBlock_dir])):
 		for x in range(0, len(blockData[activeBlock][activeBlock_dir][0])):
-			print y, x
+			if x+dx < 0:
+				print "cant go there buddy"
+				return True
+			if x+dx >= len(field[0]):
+				print "nice try"
+				return True
 			if field[y+dy][x+dx] == 1:
 				print "boomshakalaka"
 				return True
+				
+	for y in range(0,len(blockData[activeBlock][activeBlock_dir)):
+		for x in range(0,len(blockData[activeblock][acitveBlock_dir][0])):
+			if blockData[activeBlock][activeBlock_dir][y][x] != 0:
+				if x + 
 	
+def lockBlock(block):
+	print "LOCKIN' BLOCK"
+	for y in range(0, len(block)):
+		for x in range(0, len(block[0])):
+			if block[y][x] != 0:
+				field[y + activeBlock_y][x + activeBlock_x+1] = 1
+			
 	
 def rotateBlock():
 	global activeBlock_dir
@@ -149,10 +172,11 @@ while True:
 	if events:
 		for e in events:
 			if e.direction == "right" and e.action == "pressed": # add check coll
-				activeBlock_x += 1
+				if not checkCollision(activeBlock+2, activeBlock_y+1):
+					activeBlock_x += 1
 				
 			if e.direction == "left" and e.action == "pressed": # Add check Coll
-				if not checkCollision(activeBlock_x-1, activeBlock_y):
+				if not checkCollision(activeBlock_x, activeBlock_y+1):
 					activeBlock_x -= 1
 				
 			if e.direction == "up" and e.action == "pressed":
@@ -164,6 +188,13 @@ while True:
 		if bottom < 8:
 			if not checkCollision(activeBlock_x+1,activeBlock_y+1):
 				activeBlock_y += 1
+			else:
+				lockBlock(blockData[activeBlock][activeBlock_dir])
+				generateBlock()
+		else:
+			print "started from the bottom now we here"
+			lockBlock(blockData[activeBlock][activeBlock_dir])
+			generateBlock()
 		sense.clear()
 		drawField()
 		drawActiveBlock()
