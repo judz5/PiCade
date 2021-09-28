@@ -8,7 +8,7 @@ sense.clear()
 MATRIX_MAX = 7
 MATRIX_MIN = 0
 
-gameSpeed = 1.0
+gameSpeed = 0.75
 timeCounter = 0.0
 lft = 0.0
 interval = gameSpeed
@@ -79,9 +79,9 @@ field =[[0,0,0,0,0,0,0,0],
 		[0,0,0,0,0,0,0,0],
 		[0,0,0,0,0,0,0,0],
 		[0,0,0,0,0,0,0,0],
-		[0,0,0,0,0,1,0,0],
-		[0,0,0,0,0,1,0,0],
-		[0,0,0,0,0,1,0,0]]
+		[0,0,0,0,0,0,0,0],
+		[0,0,0,0,0,0,0,0],
+		[1,1,1,1,1,1,1,1]]
 
 
 activeBlock_x = None
@@ -106,7 +106,6 @@ def drawActiveBlock():
 	for y in blockData[activeBlock][activeBlock_dir]:
 		xVal = 0
 		yVal += 1
-		print "In the yyyyyy fooooor loooooopppp!"
 		for x in y:
 			xVal += 1
 			if x != 0:
@@ -122,24 +121,30 @@ def drawField():
 			if field[y][x] != 0:
 				sense.set_pixel(x,y,(255,0,0))
 				
-def checkCollision(dx,dy):
-	print "new" , dy, dx
-	for y in range(0, len(blockData[activeBlock][activeBlock_dir])):
-		for x in range(0, len(blockData[activeBlock][activeBlock_dir][0])):
-			if x+dx < 0:
-				print "cant go there buddy"
-				return True
-			if x+dx >= len(field[0]):
-				print "nice try"
-				return True
-			if field[y+dy][x+dx] == 1:
-				print "boomshakalaka"
-				return True
-				
-	for y in range(0,len(blockData[activeBlock][activeBlock_dir)):
-		for x in range(0,len(blockData[activeblock][acitveBlock_dir][0])):
+def checkCollisionY(dx,dy):
+	for y in range(0,len(blockData[activeBlock][activeBlock_dir])):
+		for x in range(0,len(blockData[activeBlock][activeBlock_dir][0])):
 			if blockData[activeBlock][activeBlock_dir][y][x] != 0:
-				if x + 
+				if y+dy > len(field)-1:
+					# below field
+					return True
+				elif field[y+dy][x+dx] != 0:
+					# space is taken
+					return True
+				
+def checkCollisionX(dx,dy):
+	for y in range(0,len(blockData[activeBlock][activeBlock_dir])):
+		for x in range(0,len(blockData[activeBlock][activeBlock_dir][0])):
+			if blockData[activeBlock][activeBlock_dir][y][x] != 0:
+				if x + dx < 0:
+					# to the left
+					return True
+				if x + dx > len(field[0])-1:
+					# to the right
+					return True
+				if field[y+dy][x+dx] != 0:
+					# space is taken
+					return True
 	
 def lockBlock(block):
 	print "LOCKIN' BLOCK"
@@ -172,29 +177,33 @@ while True:
 	if events:
 		for e in events:
 			if e.direction == "right" and e.action == "pressed": # add check coll
-				if not checkCollision(activeBlock+2, activeBlock_y+1):
+				if not checkCollisionX(activeBlock+2, activeBlock_y):
 					activeBlock_x += 1
 				
 			if e.direction == "left" and e.action == "pressed": # Add check Coll
-				if not checkCollision(activeBlock_x, activeBlock_y+1):
+				if not checkCollisionX(activeBlock_x, activeBlock_y):
 					activeBlock_x -= 1
 				
 			if e.direction == "up" and e.action == "pressed":
 				rotateBlock()
+				
+			if e.direction == "down" and e.action == "pressed":
+				print "Pog"
+				interval = gameSpeed/5
+				
+			if e.direction == "down" and e.action == "pressed":
+				interval = gameSpeed
 			
 	if timeCounter > interval:
 		timeCounter = 0
 		bottom = activeBlock_y + len(blockData[activeBlock][activeBlock_dir])
-		if bottom < 8:
-			if not checkCollision(activeBlock_x+1,activeBlock_y+1):
-				activeBlock_y += 1
-			else:
-				lockBlock(blockData[activeBlock][activeBlock_dir])
-				generateBlock()
+		
+		if not checkCollisionY(activeBlock_x+1,activeBlock_y+1):
+			activeBlock_y+=1
 		else:
-			print "started from the bottom now we here"
 			lockBlock(blockData[activeBlock][activeBlock_dir])
 			generateBlock()
+		
 		sense.clear()
 		drawField()
 		drawActiveBlock()
