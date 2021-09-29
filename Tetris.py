@@ -81,7 +81,7 @@ field =[[0,0,0,0,0,0,0,0],
 		[0,0,0,0,0,0,0,0],
 		[0,0,0,0,0,0,0,0],
 		[0,0,0,0,0,0,0,0],
-		[1,1,1,1,1,1,1,1]]
+		[0,0,0,0,0,0,0,0]]
 
 
 activeBlock_x = None
@@ -125,22 +125,26 @@ def checkCollisionY(dx,dy):
 	for y in range(0,len(blockData[activeBlock][activeBlock_dir])):
 		for x in range(0,len(blockData[activeBlock][activeBlock_dir][0])):
 			if blockData[activeBlock][activeBlock_dir][y][x] != 0:
-				if y+dy > len(field)-1:
-					# below field
+				if y + dy >= len(field):
 					return True
-				elif field[y+dy][x+dx] != 0:
-					# space is taken
+				elif(field[y+dy][x+dx] != 0):
 					return True
 				
 def checkCollisionX(dx,dy):
+	print "activeBlockX = ",activeBlock_x
+	print "dx = ", dx
+	print "check colX"
 	for y in range(0,len(blockData[activeBlock][activeBlock_dir])):
 		for x in range(0,len(blockData[activeBlock][activeBlock_dir][0])):
 			if blockData[activeBlock][activeBlock_dir][y][x] != 0:
+				print "x + dx = ", x+dx
 				if x + dx < 0:
 					# to the left
+					print "left"
 					return True
-				if x + dx > len(field[0])-1:
+				if x + dx >= len(field[0]):
 					# to the right
+					print "right"
 					return True
 				if field[y+dy][x+dx] != 0:
 					# space is taken
@@ -177,7 +181,7 @@ while True:
 	if events:
 		for e in events:
 			if e.direction == "right" and e.action == "pressed": # add check coll
-				if not checkCollisionX(activeBlock+2, activeBlock_y):
+				if not checkCollisionX(activeBlock_x+2, activeBlock_y):
 					activeBlock_x += 1
 				
 			if e.direction == "left" and e.action == "pressed": # Add check Coll
@@ -196,7 +200,6 @@ while True:
 			
 	if timeCounter > interval:
 		timeCounter = 0
-		bottom = activeBlock_y + len(blockData[activeBlock][activeBlock_dir])
 		
 		if not checkCollisionY(activeBlock_x+1,activeBlock_y+1):
 			activeBlock_y+=1
