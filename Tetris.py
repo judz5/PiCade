@@ -61,11 +61,11 @@ zBlock = {
 		[0,1]],
 	1: [[0,1,1],
 		[1,1,0]],
-	2: [[0,1],
+	2: [[1,0],
 		[1,1],
-		[1,0]],
-	3: [[1,1,0],
-		[0,1,1]],
+		[0,1]],
+	3: [[0,1,1],
+		[1,1,0]],
 		
     
 }
@@ -121,23 +121,10 @@ def drawField():
 			if field[y][x] != 0:
 				sense.set_pixel(x,y,(255,0,0))
 				
-def checkCollisionY(dx,dy):
-	for y in range(0,len(blockData[activeBlock][activeBlock_dir])):
-		for x in range(0,len(blockData[activeBlock][activeBlock_dir][0])):
-			if blockData[activeBlock][activeBlock_dir][y][x] != 0:
-				if y + dy >= len(field):
-					return True
-				elif(field[y+dy][x+dx] != 0):
-					return True
-				
-def checkCollisionX(dx,dy):
-	print "activeBlockX = ",activeBlock_x
-	print "dx = ", dx
-	print "check colX"
-	for y in range(0,len(blockData[activeBlock][activeBlock_dir])):
-		for x in range(0,len(blockData[activeBlock][activeBlock_dir][0])):
-			if blockData[activeBlock][activeBlock_dir][y][x] != 0:
-				print "x + dx = ", x+dx
+def checkCollision(dx,dy,block):
+	for y in range(0,len(block)):
+		for x in range(0,len(block[0])):
+			if block[y][x] != 0:
 				if x + dx < 0:
 					# to the left
 					print "left"
@@ -145,6 +132,8 @@ def checkCollisionX(dx,dy):
 				if x + dx >= len(field[0]):
 					# to the right
 					print "right"
+					return True
+				if y+ dy >= len(field):
 					return True
 				if field[y+dy][x+dx] != 0:
 					# space is taken
@@ -160,15 +149,14 @@ def lockBlock(block):
 	
 def rotateBlock():
 	global activeBlock_dir
-	print(activeBlock_dir)
-	if activeBlock_dir < 3:
-		activeBlock_dir += 1
-	elif activeBlock_dir >= 3:
-		activeBlock == 0
-
+	tmpDir = (activeBlock_dir + 1) % 4
+	tmpBlock = blockData[activeBlock][tmpDir]
+	if not checkCollision(activeBlock_x+1,activeBlock_y, tmpBlock):
+		activeBlock_dir = (activeBlock_dir + 1) % 4
 
 generateBlock()
 print(blockData[activeBlock][activeBlock_dir])
+curBlock = blockData[activeBlock][activeBlock_dir]
 
 while True:
 	
@@ -181,11 +169,11 @@ while True:
 	if events:
 		for e in events:
 			if e.direction == "right" and e.action == "pressed": # add check coll
-				if not checkCollisionX(activeBlock_x+2, activeBlock_y):
+				if not checkCollision(activeBlock_x+2, activeBlock_y, curBlock):
 					activeBlock_x += 1
 				
 			if e.direction == "left" and e.action == "pressed": # Add check Coll
-				if not checkCollisionX(activeBlock_x, activeBlock_y):
+				if not checkCollision(activeBlock_x, activeBlock_y, curBlock):
 					activeBlock_x -= 1
 				
 			if e.direction == "up" and e.action == "pressed":
@@ -201,11 +189,12 @@ while True:
 	if timeCounter > interval:
 		timeCounter = 0
 		
-		if not checkCollisionY(activeBlock_x+1,activeBlock_y+1):
+		if not checkCollision(activeBlock_x+1,activeBlock_y+1, curBlock):
 			activeBlock_y+=1
 		else:
 			lockBlock(blockData[activeBlock][activeBlock_dir])
 			generateBlock()
+			curBlock = blockData[activeBlock][activeBlock_dir]
 		
 		sense.clear()
 		drawField()
