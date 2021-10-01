@@ -12,7 +12,7 @@ gameSpeed = 0.75
 timeCounter = 0.0
 lft = 0.0
 interval = gameSpeed
-
+linesDestroyed = None
 gameOver = False
 ###
 
@@ -153,6 +153,26 @@ def rotateBlock():
 	tmpBlock = blockData[activeBlock][tmpDir]
 	if not checkCollision(activeBlock_x+1,activeBlock_y, tmpBlock):
 		activeBlock_dir = (activeBlock_dir + 1) % 4
+		
+def checkForLine():
+    print "Checking Line"
+    lineCount = 0
+    i = 7
+    while i > 0:
+		brickCount = 0
+		for y in range(0,8):
+			if field[y][i] != 0:
+				brickCount += 1
+			if brickCount == 8:
+				for y in range (0,8):
+					field[y,i] = 0
+				lineCount += 1
+				for r in range(i, 1, -1):
+					for m in range(0,8):
+						field[r][m] = field[k][m-1]
+				i += 1
+			i -= 1
+		return lineCount
 
 generateBlock()
 print(blockData[activeBlock][activeBlock_dir])
@@ -195,6 +215,14 @@ while True:
 			lockBlock(blockData[activeBlock][activeBlock_dir])
 			generateBlock()
 			curBlock = blockData[activeBlock][activeBlock_dir]
+			linesDestroyed = checkForLine()
+                if linesDestroyed == 1:
+                    score += 4
+                elif linesDestroyed == 2:
+                    score += 10
+                elif linesDestroyed == 3:
+                    score += 30
+			
 		
 		sense.clear()
 		drawField()
