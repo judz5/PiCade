@@ -44,13 +44,12 @@ iBlock = {
     0: [[1,0],
 		[1,0],
 		[1,0]],
-	1: [[0,0,0],
-		[1,1,1]],
+	1: [[1,1,1]],
 	2: [[0,1],
 		[0,1],
 		[0,1]],
-	3: [[0,0,0],
-		[1,1,1]],
+	3: [[1,1,1]],
+	
 
     
 }
@@ -91,7 +90,6 @@ activeBlock_dir = None
 
 def generateBlock():
 	global activeBlock_x, activeBlock_y, activeBlock, activeBlock_dir
-	print "GENERATIN' BLOCK"
 	temp = None
 	activeBlock_x = 2
 	activeBlock_y = -1
@@ -100,7 +98,6 @@ def generateBlock():
 
 
 def drawActiveBlock():
-	print "DRAWIN' BLOCK"
 	yVal = -1
 	xVal = 0
 	for y in blockData[activeBlock][activeBlock_dir]:
@@ -133,14 +130,15 @@ def checkCollision(dx,dy,block):
 					# to the right
 					print "right"
 					return True
-				if y+ dy >= len(field):
+				if y + dy >= len(field):
+					print "Bottom"
 					return True
 				if field[y+dy][x+dx] != 0:
 					# space is taken
+					print "Collision at, ", x+dx, y+dy 
 					return True
 	
 def lockBlock(block):
-	print "LOCKIN' BLOCK"
 	for y in range(0, len(block)):
 		for x in range(0, len(block[0])):
 			if block[y][x] != 0:
@@ -157,15 +155,16 @@ def rotateBlock():
 def checkForLine():
     print "Checking Line"
     lineCount = 0
-    i = 7
-    while i > 0:
+    i = 0
+    while i >= 0:
 		brickCount = 0
 		for y in range(0,8):
-			if field[y][i] != 0:
-				brickCount += 1
+			if field[i][y] != 0:
+				brickCount += 1 
+				print "BrickCount = ", brickCount
 			if brickCount == 8:
 				for y in range (0,8):
-					field[y,i] = 0
+					field[i][y] = 0
 				lineCount += 1
 				for r in range(i, 1, -1):
 					for m in range(0,8):
@@ -198,6 +197,7 @@ while True:
 				
 			if e.direction == "up" and e.action == "pressed":
 				rotateBlock()
+				curBlock = blockData[activeBlock][activeBlock_dir]
 				
 			if e.direction == "down" and e.action == "pressed":
 				print "Pog"
