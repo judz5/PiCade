@@ -14,6 +14,7 @@ lft = 0.0
 interval = gameSpeed
 linesDestroyed = None
 gameOver = False
+score = 0
 ###
 
 square = {
@@ -80,7 +81,7 @@ field =[[0,0,0,0,0,0,0,0],
 		[0,0,0,0,0,0,0,0],
 		[0,0,0,0,0,0,0,0],
 		[0,0,0,0,0,0,0,0],
-		[0,0,0,0,0,0,0,0]]
+		[1,1,1,1,1,1,1,0]]
 
 
 activeBlock_x = None
@@ -153,25 +154,25 @@ def rotateBlock():
 		activeBlock_dir = (activeBlock_dir + 1) % 4
 		
 def checkForLine():
-    print "Checking Line"
-    lineCount = 0
-    i = 0
-    while i >= 0:
+	print "Checking Line"
+	lineCount = 0
+	y = 7
+	while (y > 0):
 		brickCount = 0
-		for y in range(0,8):
-			if field[i][y] != 0:
-				brickCount += 1 
-				print "BrickCount = ", brickCount
-			if brickCount == 8:
-				for y in range (0,8):
-					field[i][y] = 0
-				lineCount += 1
-				for r in range(i, 1, -1):
-					for m in range(0,8):
-						field[r][m] = field[k][m-1]
-				i += 1
-			i -= 1
-		return lineCount
+		for j in range(0,8):
+			if field[y][j] != 0:
+				brickCount+=1
+				print "brickCount = ", brickCount
+		if brickCount == 8:
+			for j in range (0,8):
+				field[y][j] = 0
+			lineCount += 1
+			for k in range(y, 1, -1):
+				for m in range(0,8):
+					field[k][m] = field[k-1][m]
+			y += 1
+		y -= 1
+	return lineCount
 
 generateBlock()
 print(blockData[activeBlock][activeBlock_dir])
