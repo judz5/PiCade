@@ -81,7 +81,7 @@ field =[[0,0,0,0,0,0,0,0],
 		[0,0,0,0,0,0,0,0],
 		[0,0,0,0,0,0,0,0],
 		[0,0,0,0,0,0,0,0],
-		[1,1,1,1,1,1,1,0]]
+		[0,0,0,0,0,0,0,0]]
 
 
 activeBlock_x = None
@@ -125,18 +125,14 @@ def checkCollision(dx,dy,block):
 			if block[y][x] != 0:
 				if x + dx < 0:
 					# to the left
-					print "left"
 					return True
 				if x + dx >= len(field[0]):
 					# to the right
-					print "right"
 					return True
 				if y + dy >= len(field):
-					print "Bottom"
 					return True
 				if field[y+dy][x+dx] != 0:
 					# space is taken
-					print "Collision at, ", x+dx, y+dy 
 					return True
 	
 def lockBlock(block):
@@ -154,7 +150,6 @@ def rotateBlock():
 		activeBlock_dir = (activeBlock_dir + 1) % 4
 		
 def checkForLine():
-	print "Checking Line"
 	lineCount = 0
 	y = 7
 	while (y > 0):
@@ -162,7 +157,6 @@ def checkForLine():
 		for j in range(0,8):
 			if field[y][j] != 0:
 				brickCount+=1
-				print "brickCount = ", brickCount
 		if brickCount == 8:
 			for j in range (0,8):
 				field[y][j] = 0
@@ -175,10 +169,9 @@ def checkForLine():
 	return lineCount
 
 generateBlock()
-print(blockData[activeBlock][activeBlock_dir])
 curBlock = blockData[activeBlock][activeBlock_dir]
 
-while True:
+while not gameOver:
 	
 	ct = time.time()
 	dt = ct - lft
@@ -201,7 +194,6 @@ while True:
 				curBlock = blockData[activeBlock][activeBlock_dir]
 				
 			if e.direction == "down" and e.action == "pressed":
-				print "Pog"
 				interval = gameSpeed/5
 				
 			if e.direction == "down" and e.action == "pressed":
@@ -217,13 +209,15 @@ while True:
 			generateBlock()
 			curBlock = blockData[activeBlock][activeBlock_dir]
 			linesDestroyed = checkForLine()
-                if linesDestroyed == 1:
-                    score += 4
-                elif linesDestroyed == 2:
-                    score += 10
-                elif linesDestroyed == 3:
-                    score += 30
-			
+			score = score + linesDestroyed
+                    
+		for j in range(0,8):
+			if(field[0][j] != 0):
+				sense.clear()
+				sense.show_message("GAME OVER!")
+				stats = "SCORE = " +str(score)
+				sense.show_message(stats)
+				gameOver = True
 		
 		sense.clear()
 		drawField()
